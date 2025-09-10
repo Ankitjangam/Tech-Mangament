@@ -88,10 +88,13 @@ function saveTask() {
 function renderSubtasks() {
   subtasksList.innerHTML = "";
   if (!subtask.subtasks) subtask.subtasks = [];
+
   subtask.subtasks.forEach((s, i) => {
     const li = document.createElement("li");
     li.textContent = s.name;
     li.style.cursor = "pointer";
+
+    // Toggle done on single click
     li.addEventListener("click", () => {
       s.done = !s.done;
       li.style.textDecoration = s.done ? "line-through" : "none";
@@ -99,10 +102,38 @@ function renderSubtasks() {
       logActivity(`Subtask "${s.name}" marked ${s.done ? "done" : "not done"}`);
       saveTask();
     });
+
+    // Edit subtask on double-click
+    li.addEventListener("dblclick", () => {
+      const input = document.createElement("input");
+      input.type = "text";
+      input.value = s.name;
+      input.style.width = "80%";
+      li.innerHTML = "";
+      li.appendChild(input);
+      input.focus();
+
+      // Save new name on blur or Enter
+      input.addEventListener("blur", () => {
+        const newName = input.value.trim();
+        if (newName) {
+          s.name = newName;
+        }
+        renderSubtasks();
+        saveTask();
+        logActivity(`Subtask renamed to "${s.name}"`);
+      });
+
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") input.blur();
+      });
+    });
+
     li.style.textDecoration = s.done ? "line-through" : "none";
     subtasksList.appendChild(li);
   });
 }
+
 
 addSubtaskBtn.addEventListener("click", () => {
   const name = newSubtaskInput.value.trim();
