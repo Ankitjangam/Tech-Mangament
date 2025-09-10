@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Task Description</title>
+  <link rel="stylesheet" href="task-description.css">
+</head>
+<body>
+
+<h1>Task Description</h1>
+
+<div class="container">
+  <div class="row">
+    <label>Tech:</label>
+    <span id="techName"></span>
+  </div>
+
+  <div class="row">
+    <label>Task Name:</label>
+    <input type="text" id="taskName" class="editable">
+  </div>
+
+  <div class="row">
+    <label>Priority:</label>
+    <select id="prioritySelect" class="editable">
+      <option value="Low">Low</option>
+      <option value="Medium">Medium</option>
+      <option value="High">High</option>
+    </select>
+  </div>
+
+  <div class="row">
+    <label>Expected Time:</label>
+    <div id="expWrapper" class="time-inputs">
+      <input type="number" id="expDays" placeholder="d" min="0">
+      <input type="number" id="expHours" placeholder="h" min="0" max="23">
+      <input type="number" id="expMins" placeholder="m" min="0" max="59">
+    </div>
+  </div>
+
+  <label>Description:</label>
+  <textarea id="taskDesc" placeholder="Write details about this task..."></textarea>
+
+  <div class="row">
+    <label>Attach Link:</label>
+    <input type="url" id="taskLink" class="editable" placeholder="https://example.com">
+  </div>
+
+  <div>
+  <label>Attachments:</label>
+  <div id="fileDropZone" class="file-drop-zone">
+    Drag & drop files here or click to upload
+    <input type="file" id="fileInput" multiple hidden>
+  </div>
+  <ul id="attachedFiles"></ul>
+</div>
+
+  <div class="row">
+    <label>Due Date:</label>
+    <input type="date" id="dueDate" class="editable">
+  </div>
+  
+
+  <div class="row">
+    <label>Progress:</label>
+    <progress id="progressBar" value="0" max="100"></progress>
+  </div>
+
+  <div>
+    <label>Subtasks:</label>
+    <ul id="subtasksList"></ul>
+    <input type="text" id="newSubtask" placeholder="Add a subtask...">
+    <button id="addSubtaskBtn">➕ Add</button>
+  </div>
+
+  <div>
+    <label>Comments / Notes:</label>
+    <textarea id="taskComments" placeholder="Add comments or notes..."></textarea>
+  </div>
+
+  <div class="buttons">
+    <button class="btn btn-back" onclick="goBack()">⬅ Back</button>
+    <button class="btn btn-save" id="saveBtn" onclick="saveTask()">💾 Save</button>
+    <button class="btn btn-edit" id="editBtn" onclick="enableEdit()" style="display:none;">✏ Edit</button>
+    <button class="btn btn-delete" onclick="deleteTask()">🗑 Delete</button>
+    <button class="btn btn-copy" onclick="copyLink()">🔗 Copy Link</button>
+  </div>
+
+  <div id="historyLog">
+    <h3>Activity Log</h3>
+    <ul id="logList"></ul>
+  </div>
+</div>
+
+<script src="task-description.js"></script>
+</body>
+</html>

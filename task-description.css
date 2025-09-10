@@ -1,0 +1,141 @@
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #1e1e2f;
+  margin: 20px;
+  color: #e0e0e0;
+  transition: background 0.3s, color 0.3s;
+}
+h1 {
+  text-align: center;
+  font-size: 28px;
+  margin-bottom: 25px;
+  background: linear-gradient(90deg, #f59e0b, #ef4444);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.container {
+  max-width: 850px;
+  margin: auto;
+  background: #2c2c3e;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+.row label {
+  font-weight: bold;
+  color: #3b82f6;
+  width: 140px;
+}
+.editable, select, input[type="date"] {
+  padding: 8px;
+  border: 1px solid #3b82f6;
+  border-radius: 6px;
+  flex: 1;
+  background: #1e1e2f;
+  color: #f3f4f6;
+}
+.editable:focus, select:focus, input[type="date"]:focus, textarea:focus {
+  outline: none;
+  box-shadow: 0 0 10px 3px #3b82f6;
+  transform: scale(1.02);
+}
+
+.readonly {
+  border: none !important;
+  background: transparent;
+  font-weight: bold;
+  color: #f3f4f6;
+  pointer-events: none;
+}
+
+textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 10px;
+  border: 1px solid #3b82f6;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 15px;
+  background: #1e1e2f;
+  color: #f3f4f6;
+}
+
+.time-inputs { display: flex; gap: 8px; }
+.time-inputs input { width: 60px; text-align: center; }
+
+ul { list-style-type: disc; padding-left: 20px; }
+ul li { margin-bottom: 5px; }
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 15px;
+}
+.btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  color: white;
+  font-size: 14px;
+}
+.btn-save { background: linear-gradient(135deg, #10b981, #047857); }
+.btn-edit { background: linear-gradient(135deg, #3b82f6, #1e40af); }
+.btn-delete { background: linear-gradient(135deg, #ef4444, #b91c1c); }
+.btn-back { background: linear-gradient(135deg, #6b7280, #374151); }
+.btn-copy { background: linear-gradient(135deg, #f59e0b, #d97706); }
+
+#progressBar { width: 100%; height: 20px; border-radius: 8px; margin-bottom: 15px; }
+
+#historyLog { margin-top: 20px; background: #1f1f30; padding: 10px; border-radius: 8px; }
+#historyLog h3 { margin-bottom: 10px; }
+
+
+.file-drop-zone {
+  border: 2px dashed #3b82f6;
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+  cursor: pointer;
+  margin-bottom: 10px;
+  transition: all 0.3s;
+  color: #f3f4f6;
+}
+.file-drop-zone.dragover {
+  background: #3b82f6;
+  color: #1e1e2f;
+}
+#attachedFiles li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+  background: #1f1f30;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+.file-remove-btn {
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 3px 8px;
+  transition: 0.2s all;
+}
+.file-remove-btn:hover {
+  opacity: 0.9;
+  transform: scale(1.05);
+}

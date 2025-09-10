@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Workspace - Dark Mode</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      margin: 20px;
+      background: #1e1e2f;
+      color: #e0e0e0;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 32px;
+      margin-bottom: 25px;
+      background: linear-gradient(90deg, #f59e0b, #ef4444);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: flex-start;
+      margin-bottom: 20px;
+    }
+    .btn-nav {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn-nav:hover { transform: translateY(-2px); }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #2c2c3e;
+      padding: 18px 22px;
+      border-radius: 14px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    .tech-name {
+      font-size: 24px;
+      font-weight: bold;
+      color: #3b82f6;
+      cursor: text;
+    }
+    .header-info {
+      display: flex;
+      gap: 20px;
+      font-size: 14px;
+      align-items: center;
+    }
+    .status-badge {
+      padding: 6px 16px;
+      border-radius: 16px;
+      font-weight: 600;
+      font-size: 13px;
+    }
+    .status-badge.not-started { background: #6b7280; color: #fff; }
+    .status-badge.in-progress { background: #f59e0b; color: #fff; }
+    .status-badge.done { background: #10b981; color: #fff; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #2c2c3e;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      margin-bottom: 20px;
+    }
+    th, td {
+      padding: 12px 16px;
+      text-align: center;
+      font-size: 14px;
+      border: 1px solid #44475a;
+    }
+    th { background: #3b82f6; color: #fff; }
+
+    tr:nth-child(even) { background: #353547; }
+    tr:hover { background: #4b4b6b; }
+
+    .btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .btn:hover { transform: scale(1.05); }
+    .btn-toggle { background: #10b981; color: #fff; }
+    .btn-toggle.stop { background: #ef4444; }
+    .btn-edit { background: #3b82f6; color: #fff; }
+    .btn-delete { background: #f43f5e; color: #fff; }
+    .save-btn { background: #10b981; color: #fff; padding: 8px 16px; }
+    .save-btn:hover { background: #059669; }
+
+    td.spent-time { font-weight: bold; color: #f3f4f6; }
+    .over-time { color: #f87171; font-weight: bold; }
+
+    .add-task-row td { background: #353547; }
+    .task-input, .time-inputs input {
+      padding: 6px 10px;
+      border: 1px solid #3b82f6;
+      border-radius: 8px;
+      font-size: 13px;
+      width: 90%;
+      background: #1e1e2f;
+      color: #f3f4f6;
+      text-align: center;
+    }
+    .time-inputs { display: flex; justify-content: center; gap: 5px; }
+
+    #plannedDaysInput {
+      width: 60px;
+      padding: 4px;
+      border: 1px solid #3b82f6;
+      border-radius: 6px;
+      text-align: center;
+      background: #1e1e2f;
+      color: #f3f4f6;
+    }
+    #addTaskBtn {
+      padding: 10px 20px;
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    #addTaskBtn:hover { transform: translateY(-2px); }
+
+    tr.dragging { opacity: 0.5; background: #4b4b6b; }
+  </style>
+</head>
+<body>
+  <h1>Workspace</h1>
+
+  <div class="top-bar">
+    <button class="btn-nav" onclick="goHome()">🏠 Home</button>
+  </div>
+
+  <div class="header">
+    <span id="techName" class="tech-name" contenteditable="true"></span>
+    <div class="header-info">
+      <span id="createdAt"></span>
+      <span id="plannedDaysBox"></span>
+      <span id="autoTime">Spent Time: --</span>
+      <span id="workspaceStatus" class="status-badge"></span>
+    </div>
+  </div>
+
+  <table id="taskTable">
+    <thead>
+      <tr>
+        <th>Sr.No</th>
+        <th>Task</th>
+        <th>Expected Time (d/h/m)</th>
+        <th>Spent Time</th>
+        <th>Button</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <button id="addTaskBtn">+ Add Task</button>
+
+<script>
+  let tasks = JSON.parse(localStorage.getItem("techTasks")) || [];
+const params = new URLSearchParams(window.location.search);
+const taskId = Number(params.get("id"));
+let techTask = tasks.find(t => t.id === taskId);
+let subtasks = JSON.parse(localStorage.getItem("ws_" + taskId) || "[]");
+
+const tableBody = document.querySelector("#taskTable tbody");
+const addTaskBtn = document.getElementById("addTaskBtn");
+const techNameEl = document.getElementById("techName");
+const createdAtEl = document.getElementById("createdAt");
+const autoTimeEl = document.getElementById("autoTime");
+const plannedDaysBox = document.getElementById("plannedDaysBox");
+const workspaceStatusEl = document.getElementById("workspaceStatus");
+
+let timers = {};
+let addingTask = false;
+let dragSrcIndex = null;
+
+// Restore running tasks
+subtasks.forEach((task, index) => {
+  if (task.running && task.startTime) startTimerInterval(index);
+});
+
+function startTimerInterval(i) {
+  clearInterval(timers[i]);
+  let task = subtasks[i];
+  timers[i] = setInterval(() => {
+    let elapsed = task.running && task.startTime ? Math.floor((Date.now() - task.startTime) / 1000) : 0;
+    document.getElementById("spent-" + i).textContent = formatTime(task.spentTime + elapsed);
+  }, 1000);
+}
+
+if (!techTask) {
+  techNameEl.innerText = "Task Not Found";
+} else {
+  techNameEl.innerText = techTask.tech;
+  createdAtEl.textContent = "Created: " + (techTask.createdAt || new Date().toLocaleString());
+  if (!techTask.createdAt) { techTask.createdAt = new Date().toLocaleString(); saveMain(); }
+  if (!techTask.plannedTime) {
+    plannedDaysBox.innerHTML = `Planned: <input id="plannedDaysInput" type="number" min="1" placeholder="Days"> <button onclick="savePlannedDays()">Save</button>`;
+  } else plannedDaysBox.textContent = "Planned: " + techTask.plannedTime + " days";
+}
+
+function saveMain() { 
+  const index = tasks.findIndex(t => t.id === taskId); 
+  tasks[index] = techTask; 
+  localStorage.setItem("techTasks", JSON.stringify(tasks)); 
+}
+
+function savePlannedDays() {
+  const input = document.getElementById("plannedDaysInput");
+  if (input && input.value) { techTask.plannedTime = input.value; saveMain(); plannedDaysBox.textContent = "Planned: " + input.value + " days"; }
+}
+
+function formatTime(totalSeconds) {
+  let days = Math.floor(totalSeconds / (24*3600));
+  let hours = Math.floor((totalSeconds % (24*3600)) / 3600);
+  let minutes = Math.floor((totalSeconds % 3600) / 60);
+  let seconds = totalSeconds % 60;
+  return `${days}d ${hours}h ${minutes}m ${seconds}s`;
+}
+
+function parseExpectedTime(str) {
+  let days=0,hours=0,mins=0;
+  let dMatch = str.match(/(\d+)d/);
+  let hMatch = str.match(/(\d+)h/);
+  let mMatch = str.match(/(\d+)m/);
+  if(dMatch) days=parseInt(dMatch[1]);
+  if(hMatch) hours=parseInt(hMatch[1]);
+  if(mMatch) mins=parseInt(mMatch[1]);
+  return days*24*60 + hours*60 + mins;
+}
+
+// Drag & Drop Handlers
+function handleDragStart(e) { dragSrcIndex = +this.dataset.index; this.classList.add("dragging"); e.dataTransfer.effectAllowed="move"; }
+function handleDragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect="move"; }
+function handleDrop(e) { e.stopPropagation(); const dropIndex=+this.dataset.index; if(dragSrcIndex!==null && dragSrcIndex!==dropIndex){ const movedTask=subtasks.splice(dragSrcIndex,1)[0]; subtasks.splice(dropIndex,0,movedTask); renderTasks(); } }
+function handleDragEnd() { this.classList.remove("dragging"); }
+
+function renderTasks() {
+  tableBody.innerHTML = "";
+  let totalSeconds=0;
+  let allDone = subtasks.length>0;
+  let anyInProgress=false;
+
+  subtasks.forEach((task,index)=>{
+    if(task.spentTime===undefined) task.spentTime=0;
+    let spentSeconds=task.spentTime;
+    if(task.status!=="Done") allDone=false;
+    if(task.status==="In Progress") anyInProgress=true;
+
+    const timeStr=formatTime(spentSeconds);
+    let overClass="";
+    if(task.expected && spentSeconds/60>parseExpectedTime(task.expected)) overClass="over-time";
+
+    const row=document.createElement("tr");
+    row.setAttribute("draggable",true);
+    row.dataset.index=index;
+    row.innerHTML=`
+      <td>${index+1}</td>
+      <td><a href="description.html?id=${taskId}&sub=${index}" style="color:#3b82f6;font-weight:bold;text-decoration:none">${task.name}</a></td>
+      <td>${task.expected}</td>
+      <td class="spent-time ${overClass}" id="spent-${index}">${timeStr}</td>
+      <td><button class="btn btn-toggle ${task.running?'stop':''}" onclick="toggleTimer(${index})">${task.running?'Stop':'Start'}</button></td>
+      <td class="status ${task.status.replace(" ","-").toLowerCase()}">${task.status}</td>
+      <td><button class="btn btn-edit" onclick="changeStatus(${index})">Change</button><button class="btn btn-delete" onclick="deleteTask(${index})">Delete</button></td>
+    `;
+    row.addEventListener("dragstart",handleDragStart);
+    row.addEventListener("dragover",handleDragOver);
+    row.addEventListener("drop",handleDrop);
+    row.addEventListener("dragend",handleDragEnd);
+    tableBody.appendChild(row);
+    totalSeconds+=spentSeconds;
+  });
+
+  if(addingTask){
+    const row=document.createElement("tr");
+    row.className="add-task-row";
+    row.innerHTML=`
+      <td>${subtasks.length+1}</td>
+      <td><input type="text" id="newTaskName" class="task-input" placeholder="Enter task name"></td>
+      <td>
+        <div class="time-inputs">
+          <input type="number" id="expDays" placeholder="d" min="0">
+          <input type="number" id="expHours" placeholder="h" min="0" max="23">
+          <input type="number" id="expMins" placeholder="m" min="0" max="59">
+        </div>
+      </td>
+      <td colspan="4"><button class="save-btn" onclick="saveNewTask()">Save Task</button></td>
+    `;
+    tableBody.appendChild(row);
+  }
+
+  localStorage.setItem("ws_" + taskId,JSON.stringify(subtasks));
+  autoTimeEl.textContent=`Spent Time: ${formatTime(totalSeconds)}`;
+
+  if(subtasks.length===0){ workspaceStatusEl.textContent="Not Started"; workspaceStatusEl.className="status-badge not-started"; }
+  else if(allDone){ workspaceStatusEl.textContent="Done"; workspaceStatusEl.className="status-badge done"; }
+  else if(anyInProgress){ workspaceStatusEl.textContent="In Progress"; workspaceStatusEl.className="status-badge in-progress"; }
+  else { workspaceStatusEl.textContent="Not Started"; workspaceStatusEl.className="status-badge not-started"; }
+
+  techTask.status = workspaceStatusEl.textContent;
+  saveMain();
+}
+
+function addTask(){ if(addingTask) return; addingTask=true; renderTasks(); }
+function saveNewTask(){
+  const name=document.getElementById("newTaskName").value.trim();
+  const d=parseInt(document.getElementById("expDays").value)||0;
+  const h=parseInt(document.getElementById("expHours").value)||0;
+  const m=parseInt(document.getElementById("expMins").value)||0;
+  if(!name){ alert("⚠ Please enter a task name."); return; }
+  subtasks.push({name, expected:`${d}d ${h}h ${m}m`, spentTime:0, status:"Not Started", running:false});
+  addingTask=false; renderTasks();
+}
+
+function changeStatus(i){ 
+  const current=subtasks[i].status;
+  if(current==="Not Started") subtasks[i].status="In Progress";
+  else if(current==="In Progress") subtasks[i].status="Done";
+  else subtasks[i].status="Not Started";
+  renderTasks();
+}
+function deleteTask(i){ if(confirm("Delete this task?")){ subtasks.splice(i,1); renderTasks(); } }
+function toggleTimer(i){
+  let task=subtasks[i];
+  if(task.running){ clearInterval(timers[i]); task.running=false; task.spentTime+=Math.floor((Date.now()-task.startTime)/1000); delete task.startTime; }
+  else{ task.running=true; task.status="In Progress"; task.startTime=Date.now(); }
+  localStorage.setItem("ws_"+taskId,JSON.stringify(subtasks));
+  startTimerInterval(i); renderTasks();
+}
+
+addTaskBtn.addEventListener("click",addTask);
+techNameEl.addEventListener("blur",()=>{ techTask.tech = techNameEl.innerText; saveMain(); });
+function goHome(){ window.location.href="index.html"; }
+
+renderTasks();
+
+</script>
+</body>
+</html>
