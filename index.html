@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Tech Mastery</title>
@@ -37,12 +38,13 @@
       border-radius: 30px;
       cursor: pointer;
       color: #fff;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
       transition: transform 0.3s, box-shadow 0.3s;
     }
+
     .track-btn:hover {
       transform: translateY(-3px);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
     }
 
     /* ===== Progress Bar ===== */
@@ -52,8 +54,9 @@
       border-radius: 20px;
       overflow: hidden;
       height: 20px;
-      box-shadow: inset 0 2px 5px rgba(0,0,0,0.08);
+      box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.08);
     }
+
     .progress-bar {
       height: 100%;
       background: linear-gradient(90deg, #4f46e5, #6366f1);
@@ -69,10 +72,11 @@
       background: #fff;
       border-radius: 14px;
       overflow: hidden;
-      box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
     }
 
-    th, td {
+    th,
+    td {
       padding: 14px 18px;
       text-align: center;
       font-size: 15px;
@@ -111,9 +115,10 @@
       font-size: 15px;
       transition: border 0.3s, box-shadow 0.3s;
     }
+
     .add-section input:focus {
       border-color: #4f46e5;
-      box-shadow: 0 0 10px rgba(99,102,241,0.3);
+      box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
     }
 
     .add-section button {
@@ -124,12 +129,13 @@
       border: none;
       border-radius: 10px;
       cursor: pointer;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
       transition: transform 0.3s, box-shadow 0.3s;
     }
+
     .add-section button:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
     }
 
     /* ===== Status Labels ===== */
@@ -139,14 +145,25 @@
       font-weight: 600;
       color: #fff;
       display: inline-block;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
       transition: transform 0.2s;
     }
-    .status:hover { transform: scale(1.05); }
 
-    .not-started { background: #6b7280; }
-    .in-progress { background: #f59e0b; }
-    .done { background: #10b981; }
+    .status:hover {
+      transform: scale(1.05);
+    }
+
+    .not-started {
+      background: #6b7280;
+    }
+
+    .in-progress {
+      background: #f59e0b;
+    }
+
+    .done {
+      background: #10b981;
+    }
 
     /* ===== Links ===== */
     a {
@@ -155,6 +172,7 @@
       text-decoration: none;
       transition: color 0.2s;
     }
+
     a:hover {
       color: #3730a3;
       text-decoration: underline;
@@ -172,12 +190,14 @@
       font-weight: 600;
       transition: background 0.2s, transform 0.2s;
     }
+
     .delete-btn:hover {
       background: #b91c1c;
       transform: scale(1.05);
     }
   </style>
 </head>
+
 <body>
 
   <header>
@@ -227,12 +247,13 @@
         }
 
         row.innerHTML = `
-          <td>${index + 1}</td>
-          <td>${task.tech}</td>
-          <td><span class="status ${statusClass}">${task.status}</span></td>
-          <td><a href="workspace.html?id=${task.id}" target="_blank">Open</a></td>
-          <td><button class="delete-btn" onclick="deleteTask(${task.id})">Delete</button></td>
-        `;
+  <td>${index + 1}</td>
+  <td>${task.tech}</td>
+  <td><span class="status ${statusClass}">${task.status}</span></td>
+  <td><a href="workspace.html?id=${task.id}">Open</a></td>
+  <td><button class="delete-btn" onclick="deleteTask(${task.id})">Delete</button></td>
+`;
+
 
         tbody.appendChild(row);
       });
@@ -263,4 +284,5 @@
   </script>
 
 </body>
+
 </html>
