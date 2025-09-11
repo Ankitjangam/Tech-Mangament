@@ -11,6 +11,19 @@
       color: #e0e0e0;
     }
 
+    #dailyReminder {
+  text-align: center;
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 20px;
+  color: #f59e0b;
+  background: #2c2c3e;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+
     h1 {
       text-align: center;
       font-size: 32px;
@@ -148,6 +161,7 @@
 </head>
 <body>
   <h1>Workspace</h1>
+  <div id="dailyReminder">⚡ Must do daily 3 hours</div>
 
   <div class="top-bar">
     <button class="btn-nav" onclick="goHome()">🏠 Home</button>
@@ -218,11 +232,63 @@ if (!techTask) {
 } else {
   techNameEl.innerText = techTask.tech;
   createdAtEl.textContent = "Created: " + (techTask.createdAt || new Date().toLocaleString());
-  if (!techTask.createdAt) { techTask.createdAt = new Date().toLocaleString(); saveMain(); }
-  if (!techTask.plannedTime) {
-    plannedDaysBox.innerHTML = `Planned: <input id="plannedDaysInput" type="number" min="1" placeholder="Days"> <button onclick="savePlannedDays()">Save</button>`;
-  } else plannedDaysBox.textContent = "Planned: " + techTask.plannedTime + " days";
+  if (!techTask.createdAt) { 
+    techTask.createdAt = new Date().toLocaleString(); 
+    saveMain(); 
+  }
+
+  function renderPlannedHours() {
+    plannedDaysBox.innerHTML = "";
+
+    if (!techTask.plannedHours) {
+      // First-time input with Save button
+      plannedDaysBox.innerHTML = `
+        Planned: <input id="plannedHoursInput" type="number" min="1" placeholder="Hours">
+        <button onclick="savePlannedHours()">Save</button> hrs
+      `;
+    } else {
+      // Already saved — inline editable span
+      plannedDaysBox.innerHTML = `Planned: <span id="plannedHours">${techTask.plannedHours}</span> hrs`;
+      const spanEl = document.getElementById("plannedHours");
+
+      spanEl.addEventListener("dblclick", () => {
+        const input = document.createElement("input");
+        input.type = "number";
+        input.value = techTask.plannedHours;
+        input.min = 1;
+        input.style.width = "50px";
+        spanEl.replaceWith(input);
+        input.focus();
+
+        const save = () => {
+          if (input.value && !isNaN(input.value)) {
+            techTask.plannedHours = input.value;
+            saveMain();
+            renderPlannedHours();
+          } else {
+            renderPlannedHours(); // revert if invalid
+          }
+        };
+
+        input.addEventListener("blur", save);
+        input.addEventListener("keydown", (e) => { if (e.key === "Enter") save(); });
+      });
+    }
+  }
+
+  renderPlannedHours();
+
+  // Save function for first-time entry
+  window.savePlannedHours = function() {
+    const input = document.getElementById("plannedHoursInput");
+    if (input && input.value && !isNaN(input.value)) {
+      techTask.plannedHours = input.value;
+      saveMain();
+      renderPlannedHours();
+    }
+  }
 }
+
 
 function saveMain() { 
   const index = tasks.findIndex(t => t.id === taskId); 
