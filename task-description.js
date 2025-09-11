@@ -86,17 +86,24 @@ function saveTask() {
   subtask.priority = prioritySelect.value;
   subtask.dueDate = dueDateEl.value;
   subtask.comments = commentsEl.value;
-  let d = parseInt(document.getElementById("expDays")?.value) || 0;
-  let h = parseInt(document.getElementById("expHours")?.value) || 0;
-  let m = parseInt(document.getElementById("expMins")?.value) || 0;
-  subtask.expected = `${d}d ${h}h ${m}m`;
+
+  // Only update expected time when in edit mode
+  if (document.getElementById("expDays")) {
+    let d = parseInt(document.getElementById("expDays").value) || 0;
+    let h = parseInt(document.getElementById("expHours").value) || 0;
+    let m = parseInt(document.getElementById("expMins").value) || 0;
+    subtask.expected = `${d}d ${h}h ${m}m`;
+  }
+
   subtasks[subIndex] = subtask;
   localStorage.setItem("ws_" + taskId, JSON.stringify(subtasks));
-  expWrapper.innerHTML = `<span class="time-display">${subtask.expected}</span>`;
+
+  expWrapper.innerHTML = `<span class="time-display">${subtask.expected || "Not Set"}</span>`;
   logActivity("Task saved");
   lockFields();
   updateProgress();
 }
+
 
 // ---------- Subtasks ----------
 function renderSubtasks() {
