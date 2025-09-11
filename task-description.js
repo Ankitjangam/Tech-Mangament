@@ -40,27 +40,40 @@ if (!subtask) {
 
 // ---------- FUNCTIONS ----------
 function lockFields() {
-  [taskNameEl, taskDescEl, taskLinkEl, prioritySelect, dueDateEl, commentsEl].forEach(el => {
+  // Show div with full text, hide textarea
+  taskDescEl.style.display = "none";
+  document.getElementById("taskDescDisplay").style.display = "block";
+  document.getElementById("taskDescDisplay").textContent = subtask.description || "";
+
+  [taskNameEl, taskLinkEl, prioritySelect, dueDateEl, commentsEl].forEach(el => {
     el.disabled = true;
     el.classList.add("readonly");
   });
+
   document.getElementById("saveBtn").style.display = "none";
   document.getElementById("editBtn").style.display = "inline-block";
 }
 
 function enableEdit() {
+  // Switch back to textarea
+  taskDescEl.style.display = "block";
+  document.getElementById("taskDescDisplay").style.display = "none";
+
   [taskNameEl, taskDescEl, taskLinkEl, prioritySelect, dueDateEl, commentsEl].forEach(el => {
     el.disabled = false;
     el.classList.remove("readonly");
   });
+
   expWrapper.innerHTML = `
     <input type="number" id="expDays" placeholder="d" min="0">
     <input type="number" id="expHours" placeholder="h" min="0" max="23">
     <input type="number" id="expMins" placeholder="m" min="0" max="59">
   `;
+
   document.getElementById("expDays").value = subtask.expected?.match(/(\d+)d/)?.[1] || "";
   document.getElementById("expHours").value = subtask.expected?.match(/(\d+)h/)?.[1] || "";
   document.getElementById("expMins").value = subtask.expected?.match(/(\d+)m/)?.[1] || "";
+
   document.getElementById("saveBtn").style.display = "inline-block";
   document.getElementById("editBtn").style.display = "none";
 }

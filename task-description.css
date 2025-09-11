@@ -14,6 +14,7 @@ h1 {
   -webkit-text-fill-color: transparent;
 }
 
+
 .container {
   max-width: 850px;
   margin: auto;
@@ -67,6 +68,14 @@ textarea {
   background: #1e1e2f;
   color: #f3f4f6;
 }
+
+/* --- Fix: make description always full height, no scroll --- */
+#taskDesc {
+  height: auto;        /* expand with content */
+  overflow: visible;   /* no scrollbars */
+  resize: none;        /* optional: disable manual resize */
+}
+
 
 .time-inputs { display: flex; gap: 8px; }
 .time-inputs input { width: 60px; text-align: center; }
