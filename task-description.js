@@ -70,9 +70,10 @@ function enableEdit() {
     <input type="number" id="expMins" placeholder="m" min="0" max="59">
   `;
 
-  document.getElementById("expDays").value = subtask.expected?.match(/(\d+)d/)?.[1] || "";
-  document.getElementById("expHours").value = subtask.expected?.match(/(\d+)h/)?.[1] || "";
-  document.getElementById("expMins").value = subtask.expected?.match(/(\d+)m/)?.[1] || "";
+ document.getElementById("expDays").value = subtask.expected?.match(/(\d+)d/)?.[1] ?? "";
+document.getElementById("expHours").value = subtask.expected?.match(/(\d+)h/)?.[1] ?? "";
+document.getElementById("expMins").value = subtask.expected?.match(/(\d+)m/)?.[1] ?? "";
+
 
   document.getElementById("saveBtn").style.display = "inline-block";
   document.getElementById("editBtn").style.display = "none";
