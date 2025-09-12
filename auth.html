@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Login - Tech Mastery</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin:0; padding:0; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg,#667eea,#764ba2);
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+  }
+
+  .login-container {
+    background: #ffffff;
+    width: 380px;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    text-align: center;
+    transition: 0.3s;
+  }
+
+  .login-container:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 36px rgba(0,0,0,0.35);
+  }
+
+  h2 {
+    font-size: 28px;
+    margin-bottom: 30px;
+    background: linear-gradient(90deg, #43cea2, #185a9d);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  input {
+    width: 100%;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    border: 2px solid #d1d5db;
+    border-radius: 12px;
+    font-size: 15px;
+    transition: 0.3s;
+  }
+
+  input:focus {
+    border-color: #43cea2;
+    box-shadow: 0 0 8px rgba(67,206,162,0.5);
+    outline:none;
+  }
+
+  .login-btn {
+    width: 100%;
+    padding: 14px;
+    border:none;
+    border-radius: 12px;
+    background: linear-gradient(90deg,#43cea2,#185a9d);
+    color: white;
+    font-weight: 600;
+    font-size: 16px;
+    cursor:pointer;
+    transition: 0.3s;
+    box-shadow: 0 6px 18px rgba(67,206,162,0.4);
+  }
+
+  .login-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 28px rgba(67,206,162,0.6);
+  }
+
+  .error {
+    color: #ef4444;
+    font-size: 14px;
+    margin-top: 10px;
+    min-height: 18px;
+    transition: 0.3s;
+  }
+
+  @media(max-width:420px){
+    .login-container { width:90%; padding: 30px; }
+    h2 { font-size:24px; }
+    input, .login-btn { padding:12px; font-size:14px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="login-container">
+  <h2>Tech Mastery Login</h2>
+  <input type="text" id="username" placeholder="Username">
+  <input type="password" id="password" placeholder="Password">
+  <button class="login-btn" onclick="login()">Login</button>
+  <div id="error" class="error"></div>
+</div>
+
+<script>
+  const FIXED_USER = "ankit";
+  const FIXED_PASS = "ankitpassword";
+
+  function login() {
+    const user = document.getElementById("username").value.trim();
+    const pass = document.getElementById("password").value.trim();
+    const errorDiv = document.getElementById("error");
+
+    if(user === FIXED_USER && pass === FIXED_PASS){
+      sessionStorage.setItem("loggedIn","true");
+      window.location.href="problems.html";
+    } else {
+      errorDiv.textContent = "❌ Invalid username or password!";
+    }
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Real World Problems</title>
+<style>
+/* General */
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg,#eef2ff,#f5f7fb);
+  margin:0; padding:20px; color:#1f2937;
+}
+
+/* Header */
+header {
+  display:flex; justify-content:space-between; align-items:center;
+  background: linear-gradient(90deg,#ff7e5f,#feb47b);
+  color:white; padding:18px 24px; border-radius:14px; margin-bottom:25px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.18); position:sticky; top:0; z-index:1000;
+}
+header h1 { margin:0; font-size:26px; letter-spacing:1px; }
+header a {
+  color:white; text-decoration:none; font-weight:bold;
+  background:linear-gradient(90deg,#43cea2,#185a9d);
+  padding:10px 18px; border-radius:12px; cursor:pointer; transition:0.3s;
+}
+header a:hover { transform:scale(1.05); box-shadow:0 4px 15px rgba(0,0,0,0.3); }
+
+/* Search & Filter */
+.search-bar { margin-bottom:20px; display:flex; gap:10px; flex-wrap:wrap; }
+.search-bar input, .search-bar select {
+  flex:1; padding:12px; border-radius:12px; border:2px solid #d1d5db; font-size:15px;
+  transition:0.3s; background:white; box-shadow:0 1px 4px rgba(0,0,0,0.05);
+}
+.search-bar input:focus, .search-bar select:focus {
+  border-color:#4f46e5; outline:none; box-shadow:0 0 0 4px rgba(79,70,229,0.2);
+}
+
+/* Add Section */
+.add-section { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px; align-items:center; }
+.add-section input, .add-section select {
+  flex:1; padding:12px; border-radius:12px; border:2px solid #d1d5db; font-size:15px;
+}
+.add-section input:focus, .add-section select:focus { border-color:#4f46e5; box-shadow:0 0 0 4px rgba(79,70,229,0.2); }
+.add-section button {
+  background: linear-gradient(90deg,#ff7e5f,#feb47b); color:white; border:none;
+  padding:12px 22px; border-radius:12px; cursor:pointer; font-weight:600;
+  box-shadow:0 4px 12px rgba(255,126,95,0.35); transition:0.3s;
+}
+.add-section button:hover { transform:translateY(-2px); box-shadow:0 6px 16px rgba(255,126,95,0.45); }
+
+/* Problem List */
+#problemList { list-style:none; padding:0; margin:0; }
+.problem-line {
+  display:flex; justify-content:space-between; align-items:flex-start;
+  padding:14px 16px; border-radius:12px;
+  border-left:6px solid #4f46e5; margin-bottom:12px;
+  background:white; box-shadow:0 6px 18px rgba(0,0,0,0.06);
+  transition:0.3s;
+  flex-wrap:wrap;
+}
+.problem-line:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(0,0,0,0.12); }
+.problem-line .title { flex:1; font-size:16px; line-height:1.5; word-break:break-word; color:#1f2937; margin-bottom:6px; }
+.problem-line .priority {
+  padding:4px 12px; border-radius:14px; font-size:13px; font-weight:600; color:white; white-space:nowrap;
+}
+.priority.High { background:linear-gradient(90deg,#ef4444,#f87171); }
+.priority.Medium { background:linear-gradient(90deg,#f59e0b,#fcd34d); }
+.priority.Low { background:linear-gradient(90deg,#10b981,#6ee7b7); }
+
+/* Buttons inside problem line */
+.problem-line button {
+  margin-left:6px; padding:6px 14px; border:none; border-radius:10px; cursor:pointer;
+  font-size:13px; font-weight:600; transition:0.3s;
+}
+.problem-line button.open { background:linear-gradient(90deg,#4f46e5,#6366f1); color:white; box-shadow:0 3px 10px rgba(79,70,229,0.25); }
+.problem-line button.open:hover { transform:scale(1.05); box-shadow:0 4px 14px rgba(79,70,229,0.35); }
+.problem-line button.del { background:linear-gradient(90deg,#ef4444,#f87171); color:white; box-shadow:0 3px 10px rgba(239,68,68,0.25); }
+.problem-line button.del:hover { transform:scale(1.05); box-shadow:0 4px 14px rgba(239,68,68,0.35); }
+
+@media(max-width:600px){
+  .problem-line { flex-direction:column; }
+  .problem-line button { margin:6px 0 0 0; width:100%; }
+}
+</style>
+</head>
+<body>
+
+<header>
+<h1>🌍 Real World Problems</h1>
+<a onclick="goHome()">🏠 Home</a>
+</header>
+
+<div class="search-bar">
+  <input type="text" id="searchInput" placeholder="🔍 Search problems..." onkeyup="filterProblems()">
+  <select id="priorityFilter" onchange="filterProblems()">
+    <option value="">All Priorities</option>
+    <option value="High">High</option>
+    <option value="Medium">Medium</option>
+    <option value="Low">Low</option>
+  </select>
+</div>
+
+<div class="add-section">
+<input type="text" id="newProblem" placeholder="✏️ Enter a problem">
+<select id="prioritySelect">
+  <option value="Medium">Medium Priority</option>
+  <option value="High">High Priority</option>
+  <option value="Low">Low Priority</option>
+</select>
+<button onclick="addProblem()">➕ Add</button>
+</div>
+
+<ul id="problemList"></ul>
+
+<script>
+let problems = JSON.parse(localStorage.getItem("problemsList")) || [];
+
+function save(){ localStorage.setItem("problemsList", JSON.stringify(problems)); }
+
+function renderList(filterText="", filterPriority=""){
+  const list = document.getElementById("problemList");
+  list.innerHTML="";
+  problems.filter(p=> 
+    p.problem.toLowerCase().includes(filterText.toLowerCase()) &&
+    (filterPriority==="" || p.priority===filterPriority)
+  ).forEach(p=>{
+    const li=document.createElement("li");
+    li.className="problem-line";
+    li.innerHTML=`
+      <span class="title">${p.problem}</span>
+      <span class="priority ${p.priority}">${p.priority}</span>
+      <button class="open" onclick="openDetail(${p.id})">Open</button>
+      <button class="del" onclick="deleteProblem(${p.id})">Delete</button>
+    `;
+    list.appendChild(li);
+  });
+}
+
+function generateId(){ return Date.now()+Math.floor(Math.random()*1000); }
+
+function addProblem(){
+  const val = document.getElementById("newProblem").value.trim();
+  const priority = document.getElementById("prioritySelect").value;
+  if(!val) return;
+  problems.push({id:generateId(), problem:val, description:"", solutions:[], priority:priority});
+  document.getElementById("newProblem").value="";
+  save(); renderList();
+}
+
+function openDetail(id){
+  localStorage.setItem("currentProblemId", id);
+  window.location.href="problem-detail.html";
+}
+
+function deleteProblem(id){
+  problems = problems.filter(p=>p.id!==id);
+  save(); renderList();
+}
+
+function filterProblems(){
+  const text = document.getElementById("searchInput").value;
+  const priority = document.getElementById("priorityFilter").value;
+  renderList(text, priority);
+}
+
+function goHome(){ window.location.href="index.html"; }
+
+renderList();
+</script>
+</body>
+</html>

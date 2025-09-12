@@ -202,7 +202,7 @@
 
   <header>
     <h1>Tech Mastery</h1>
-    <button class="track-btn">Track & Time</button>
+    <button class="track-btn" onclick="goToAuth()">Track & Time</button>
   </header>
 
   <div class="progress-container">
@@ -263,6 +263,15 @@
       const percent = tasks.length ? Math.round((doneCount / tasks.length) * 100) : 0;
       document.getElementById("progressBar").style.width = percent + "%";
     }
+
+    function goToAuth() {
+  if (sessionStorage.getItem("loggedIn") === "true") {
+    window.location.href = "problems.html"; // ✅ go directly
+  } else {
+    window.location.href = "auth.html"; // ✅ force login
+  }
+}
+
 
     function addTask() {
       const newTechInput = document.getElementById("newTech");
