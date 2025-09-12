@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Problem Details</title>
+<style>
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(150deg, #f0f4ff, #fef9f5);
+  margin:0; padding:20px; color:#333;
+}
+
+/* Header */
+header {
+  display:flex; justify-content:space-between; align-items:center;
+  background: linear-gradient(90deg,#ff7e5f,#feb47b);
+  color:white; padding:18px 24px; border-radius:14px; margin-bottom:25px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.18);
+  position:sticky; top:0; z-index:1000;
+}
+header h1 { margin:0; font-size:26px; }
+header a {
+  color:white; text-decoration:none; font-weight:bold;
+  background:linear-gradient(90deg,#43cea2,#185a9d);
+  padding:10px 18px; border-radius:12px; cursor:pointer;
+  transition:0.3s;
+}
+header a:hover { transform:scale(1.05); box-shadow:0 4px 15px rgba(0,0,0,0.3); }
+
+/* Problem Section */
+.problem-section { margin-bottom:25px; }
+.problem-headline, .problem-description {
+  background:#ffffff; padding:15px; border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.08); transition:0.3s; width:100%;
+  min-height:45px; margin-bottom:10px; font-size:18px; overflow-wrap: break-word;
+}
+.problem-description { min-height:100px; font-size:16px; line-height:1.6; }
+.edit-btn { padding:8px 14px; border:none; border-radius:10px; cursor:pointer; font-weight:600; transition:0.3s; margin-bottom:12px; }
+.edit-btn.edit { background:linear-gradient(90deg,#ff6a00,#ee0979); color:white; }
+.edit-btn.save { background:linear-gradient(90deg,#43cea2,#185a9d); color:white; }
+.edit-btn:hover { transform:scale(1.05); box-shadow:0 4px 15px rgba(0,0,0,0.25); }
+
+/* Solutions Section */
+.solutions-section { background:#fff3e6; padding:22px; border-radius:14px; box-shadow:0 6px 20px rgba(0,0,0,0.1); }
+.solution-card { background:#fff; padding:16px 18px; border-radius:12px; margin-bottom:16px; border-left:6px solid #ff7e5f; box-shadow:0 4px 12px rgba(0,0,0,0.05); transition:0.3s; display:flex; flex-direction:column; gap:6px; }
+.solution-card:hover { box-shadow:0 8px 22px rgba(0,0,0,0.12); }
+.solution-display { display:flex; flex-direction:column; gap:4px; }
+.solution-display strong { font-size:16px; color:#ff7e5f; }
+.solution-display p { margin:0; font-size:15px; line-height:1.5; }
+.solution-display a { color:#185a9d; text-decoration:underline; font-size:14px; }
+
+/* Solution Actions */
+.solution-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:6px; }
+.solution-actions button { padding:7px 14px; border:none; border-radius:10px; cursor:pointer; font-weight:600; transition:0.3s; font-size:14px; }
+.solution-actions button.edit { background:linear-gradient(90deg,#ff6a00,#ee0979); color:white; }
+.solution-actions button.save { background:linear-gradient(90deg,#43cea2,#185a9d); color:white; }
+.solution-actions button.del { background:#ff4d4d; color:white; }
+.solution-actions button:hover { transform:scale(1.05); box-shadow:0 4px 15px rgba(0,0,0,0.25); }
+
+/* Add Solution */
+.add-solution { margin-top:12px; display:flex; flex-direction:column; gap:8px; }
+.add-solution input, .add-solution textarea { width:100%; padding:10px; border-radius:8px; border:2px solid #e0e0e0; font-size:15px; }
+.add-solution button { width:140px; align-self:flex-end; background:linear-gradient(90deg,#ff6a00,#ee0979); color:white; border:none; border-radius:10px; padding:10px 15px; cursor:pointer; transition:0.3s; }
+.add-solution button:hover { transform:scale(1.05); box-shadow:0 4px 15px rgba(0,0,0,0.25); }
+
+/* Delete Problem */
+#deleteProblem { background:#ff4d4d; color:white; padding:12px 18px; border:none; border-radius:12px; font-weight:600; cursor:pointer; transition:0.3s; margin-top:25px; }
+#deleteProblem:hover { transform:scale(1.05); box-shadow:0 4px 15px rgba(255,77,77,0.35); }
+
+</style>
+</head>
+<body>
+
+<header>
+<h1>Problem Details</h1>
+<a onclick="goHome()">🏠 Home</a>
+</header>
+
+<div class="problem-section">
+  <div class="problem-headline" id="problemTitle" contenteditable="false"></div>
+  <button class="edit-btn edit" id="titleEditBtn" onclick="toggleEdit('title')">Edit</button>
+
+  <div class="problem-description" id="problemDesc" contenteditable="false"></div>
+  <button class="edit-btn edit" id="descEditBtn" onclick="toggleEdit('desc')">Edit</button>
+</div>
+
+<div class="solutions-section">
+  <h3>Solutions</h3>
+  <div id="solutionsContainer"></div>
+  <div class="add-solution">
+    <input type="text" id="solutionTitle" placeholder="Solution title">
+    <textarea id="solutionDesc" placeholder="Long description..."></textarea>
+    <input type="url" id="solutionLink" placeholder="Link (optional)">
+    <input type="file" id="solutionFile" multiple>
+    <button onclick="addSolution()">Add Solution</button>
+  </div>
+</div>
+
+<button id="deleteProblem" onclick="deleteProblem()">🗑️ Delete Problem</button>
+
+<script>
+let problems = JSON.parse(localStorage.getItem("problemsList")) || [];
+let currentId = parseInt(localStorage.getItem("currentProblemId"));
+let currentProblem = problems.find(p=>p.id===currentId);
+
+const problemTitle = document.getElementById("problemTitle");
+const problemDesc = document.getElementById("problemDesc");
+const titleBtn = document.getElementById("titleEditBtn");
+const descBtn = document.getElementById("descEditBtn");
+const solutionsContainer = document.getElementById("solutionsContainer");
+
+function save(){ localStorage.setItem("problemsList", JSON.stringify(problems)); }
+
+function renderProblem(){
+  if(!currentProblem){ goHome(); return; }
+  problemTitle.textContent = currentProblem.problem || "Double-click to edit headline";
+  problemDesc.textContent = currentProblem.description || "Add detailed problem description...";
+  renderSolutions();
+}
+
+function toggleEdit(section){
+  if(section==="title"){
+    if(titleBtn.textContent==="Edit"){
+      problemTitle.contentEditable=true; problemTitle.focus();
+      titleBtn.textContent="Save"; titleBtn.className="edit-btn save";
+    } else {
+      problemTitle.contentEditable=false; currentProblem.problem=problemTitle.textContent.trim(); save();
+      titleBtn.textContent="Edit"; titleBtn.className="edit-btn edit";
+    }
+  }
+  if(section==="desc"){
+    if(descBtn.textContent==="Edit"){
+      problemDesc.contentEditable=true; problemDesc.focus();
+      descBtn.textContent="Save"; descBtn.className="edit-btn save";
+    } else {
+      problemDesc.contentEditable=false; currentProblem.description=problemDesc.textContent.trim(); save();
+      descBtn.textContent="Edit"; descBtn.className="edit-btn edit";
+    }
+  }
+}
+
+function renderSolutions(){
+  solutionsContainer.innerHTML="";
+  currentProblem.solutions.forEach((s,i)=>{
+    const card=document.createElement("div");
+    card.className="solution-card";
+    card.innerHTML=`
+      <div class="solution-display">
+        <strong>${s.title || "(No Title)"}</strong>
+        <p>${s.description || "(No Description)"}</p>
+        ${s.link? `<a href="${s.link}" target="_blank">${s.link}</a>` : ""}
+        ${s.files? `<div>${s.files.map(f=>`<a href="${f}" target="_blank">${f.split('/').pop()}</a>`).join(' | ')}</div>` : ""}
+      </div>
+      <div class="solution-actions">
+        <button class="edit" onclick="toggleSolutionEdit(${i},this)">Edit</button>
+        <button class="del" onclick="deleteSolution(${i})">Delete</button>
+      </div>
+    `;
+    solutionsContainer.appendChild(card);
+  });
+}
+
+function toggleSolutionEdit(index, btn){
+  const card=solutionsContainer.children[index];
+  const displayDiv = card.querySelector(".solution-display");
+
+  if(btn.textContent==="Edit"){
+    const s=currentProblem.solutions[index];
+    displayDiv.innerHTML = `
+      <input type="text" value="${s.title}" placeholder="Solution title">
+      <textarea>${s.description}</textarea>
+      <input type="url" value="${s.link||''}" placeholder="Link">
+      <input type="file" multiple>
+      ${s.files? `<div>${s.files.map(f=>`<a href="${f}" target="_blank">${f.split('/').pop()}</a>`).join(' | ')}</div>` : ""}
+    `;
+    btn.textContent="Save"; btn.className="save";
+  } else {
+    const inputs=displayDiv.querySelectorAll("input, textarea");
+    const files=[];
+    const fileInput=displayDiv.querySelector('input[type="file"]');
+    for(let f of fileInput.files){ files.push(URL.createObjectURL(f)); }
+
+    currentProblem.solutions[index]={title:inputs[0].value.trim(),description:inputs[1].value.trim(),link:inputs[2].value.trim(),files};
+    save(); renderSolutions();
+  }
+}
+
+function addSolution(){
+  const title=document.getElementById("solutionTitle").value.trim();
+  const desc=document.getElementById("solutionDesc").value.trim();
+  const link=document.getElementById("solutionLink").value.trim();
+  const fileInput=document.getElementById("solutionFile");
+  const files=[];
+  for(let f of fileInput.files){ files.push(URL.createObjectURL(f)); }
+  if(!title&&!desc&&!link&&files.length===0) return;
+
+  currentProblem.solutions.push({title,description:desc,link,files});
+  document.getElementById("solutionTitle").value="";
+  document.getElementById("solutionDesc").value="";
+  document.getElementById("solutionLink").value="";
+  document.getElementById("solutionFile").value="";
+  save(); renderSolutions();
+}
+
+function deleteSolution(i){ currentProblem.solutions.splice(i,1); save(); renderSolutions(); }
+function deleteProblem(){ problems=problems.filter(p=>p.id!==currentId); save(); goHome(); }
+function goHome(){ window.location.href="problems.html"; }
+
+renderProblem();
+</script>
+</body>
+</html>
